@@ -2,7 +2,7 @@ name: GitOps Multi-Environment Deploy
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -22,6 +22,27 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # fetch full history so we can inspect refs
+
+      - name: Debug repo state
+        run: |
+          echo "=== pwd ==="
+          pwd
+          echo "=== ls -la (workspace root) ==="
+          ls -la
+          echo "=== git remote -v ==="
+          git remote -v
+          echo "=== git log -1 ==="
+          git log -1 --oneline
+          echo "=== git branch -a ==="
+          git branch -a
+          echo "=== git ls-files (first 50) ==="
+          git ls-files | head -50
+          echo "=== git ls-files k8s/ ==="
+          git ls-files k8s/ || echo "NO k8s IN GIT INDEX"
+          echo "=== ls -la k8s/ ==="
+          ls -la k8s/ || echo "NO k8s DIRECTORY ON DISK"
 
       - name: Generate image tag
         id: meta
@@ -53,7 +74,7 @@ jobs:
       - name: Setup kubectl
         uses: azure/setup-kubectl@v4
         with:
-          version: 'v1.30.0'
+          version: "v1.30.0"
 
       - name: Configure kubeconfig
         run: |
@@ -80,7 +101,7 @@ jobs:
       - name: Setup kubectl
         uses: azure/setup-kubectl@v4
         with:
-          version: 'v1.30.0'
+          version: "v1.30.0"
 
       - name: Configure kubeconfig
         run: |
