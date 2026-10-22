@@ -90,6 +90,8 @@ jobs:
         run: |
           sed -i "s|IMAGE_TAG_PLACEHOLDER|${{ needs.prepare.outputs.image_tag }}|g" k8s/deployment.yaml
           # kubectl apply -f k8s/ --namespace staging
+          # Create the staging namespace first (Namespace objects are cluster-scoped)
+          kubectl apply -f k8s/namespace.yaml
           kubectl apply -f k8s/ --namespace staging --validate=false
           kubectl rollout status deployment/myapp --namespace staging --timeout=120s
 
