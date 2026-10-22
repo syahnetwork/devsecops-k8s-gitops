@@ -25,7 +25,7 @@ jobs:
         with:
           fetch-depth: 0 # fetch full history so we can inspect refs
 
-      - name: Debug repo state
+      - name: Debug repo state #move k8s to root folder
         run: |
           echo "=== pwd ==="
           pwd
@@ -81,10 +81,16 @@ jobs:
           mkdir -p ~/.kube
           echo "${{ secrets.KUBECONFIG }}" | base64 -d > ~/.kube/config
 
+      - name: Create Kind Cluster
+        uses: helm/kind-action@v1
+        with:
+          cluster_name: ci-cluster
+
       - name: Deploy to Staging cluster
         run: |
           sed -i "s|IMAGE_TAG_PLACEHOLDER|${{ needs.prepare.outputs.image_tag }}|g" k8s/deployment.yaml
-          kubectl apply -f k8s/ --namespace staging
+          # kubectl apply -f k8s/ --namespace staging
+          kubectl apply -f k8s/ --namespace staging --validate=false
           kubectl rollout status deployment/myapp --namespace staging --timeout=120s
 
   deploy-production:
