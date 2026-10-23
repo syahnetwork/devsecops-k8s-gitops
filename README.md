@@ -6,26 +6,6 @@ A fully automated, GitOps-driven CI/CD pipeline that deploys a containerized app
 
 ---
 
-## Table of Contents
-
-- [Overview](#overview)
-- [Architecture](#architecture)
-- [Repository Layout](#repository-layout)
-- [Pipeline Stages](#pipeline-stages)
-- [Prerequisites](#prerequisites)
-- [Setup](#setup)
-  - [1. Environments & Secrets](#1-environments--secrets)
-  - [2. Kubernetes Manifests](#2-kubernetes-manifests)
-  - [3. Triggering a Deployment](#3-triggering-a-deployment)
-- [Configuration Reference](#configuration-reference)
-- [How GitOps Works Here](#how-gitops-works-here)
-- [Rollback](#rollback)
-- [Security Notes](#security-notes)
-- [Roadmap](#roadmap)
-- [License](#license)
-
----
-
 ## Overview
 
 This repository demonstrates a production-ready GitHub Actions workflow for deploying to multiple Kubernetes environments with the following guarantees:
