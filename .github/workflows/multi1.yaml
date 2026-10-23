@@ -99,32 +99,42 @@ jobs:
 
           kubectl rollout status deployment/myapp --namespace staging --timeout=120s
 
-  # deploy-production:
-  #   name: Deploy to Production
-  #   needs: deploy-staging
-  #   runs-on: ubuntu-latest
-  #   environment:
-  #     name: production
-  #     url: https://example.com
-  #   steps:
-  #     - name: Checkout repository
-  #       uses: actions/checkout@v4
+  deploy-production:
+    name: Deploy to Production
+    needs: deploy-staging
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: https://example.com
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-  #     - name: Setup kubectl
-  #       uses: azure/setup-kubectl@v4
-  #       with:
-  #         version: "v1.30.0"
+      - name: Setup kubectl
+        uses: azure/setup-kubectl@v4
+        with:
+          version: "v1.30.0"
 
-  #     - name: Configure kubeconfig
-  #       run: |
-  #         mkdir -p ~/.kube
-  #         echo "${{ secrets.KUBECONFIG }}" | base64 -d > ~/.kube/config
+      - name: Configure kubeconfig
+        run: |
+          mkdir -p ~/.kube
+          echo "${{ secrets.KUBECONFIG }}" | base64 -d > ~/.kube/config
 
-  #     - name: Deploy to Production cluster
-  #       run: |
-  #         sed -i "s|IMAGE_TAG_PLACEHOLDER|${{ needs.prepare.outputs.image_tag }}|g" k8s/deployment.yaml
-  #         kubectl apply -f k8s/ --namespace production
-  #         kubectl rollout status deployment/myapp --namespace production --timeout=300s
+      - name: Create Kind Cluster
+        uses: helm/kind-action@v1
+        with:
+          cluster_name: ci-cluster
+
+      - name: Deploy to Production cluster
+        run: |
+          sed -i "s|IMAGE_TAG_PLACEHOLDER|${{ needs.prepare.outputs.image_tag }}|g" k8s/deployment.yaml
+          kubectl apply -f k8s/namespace.yaml
+
+          kubectl apply -f k8s/ --namespace production
+          kubectl get pods -n production
+          kubectl describe pod -n production -l app=myapp
+          kubectl get events -n production --sort-by='.lastTimestamp'
+          kubectl rollout status deployment/myapp --namespace production --timeout=300s
 
   #     - name: Health check
   #       run: |
