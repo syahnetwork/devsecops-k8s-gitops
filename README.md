@@ -36,6 +36,4 @@ This repository demonstrates a production-ready GitHub Actions workflow for depl
 - **Fail-fast validation** — Kubernetes manifests are validated with `kubeconform` before any cluster is touched.
 - **Rollout verification** — the pipeline waits for `kubectl rollout status`, so a green check means the Pods are actually `Ready`.
 
----
 
-## Architecture
