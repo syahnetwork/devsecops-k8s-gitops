@@ -99,9 +99,19 @@ jobs:
 
           kubectl rollout status deployment/myapp --namespace staging --timeout=120s
 
+  approve-production:
+    name: Manual Approval for Production
+    needs: deploy-staging
+    runs-on: ubuntu-latest
+    environment: production-gate # requires a required reviewer configured on this environment in repo settings -> Environments -> production-gate -> Environment protected nodes: Required reviewers
+    steps:
+      - name: Approval recorded
+        run: |
+          echo "Production deployment approved by ${{ github.actor }}"
+
   deploy-production:
     name: Deploy to Production
-    needs: deploy-staging
+    needs: [deploy-staging, approve-production]
     runs-on: ubuntu-latest
     environment:
       name: production
