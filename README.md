@@ -7,6 +7,25 @@ issue was (or should be) fixed, followed by a prioritized list of improvements.
 
 ---
 
+## Tools Used
+
+- **Git** — version control for the repository (checkout, history, branches in CI).
+- **GitHub Actions** — CI/CD pipeline engine (`.github/workflows/multi1.yaml`).
+- **`actions/checkout@v4`** — GitHub Action to check out the repository in each job.
+- **`azure/setup-kubectl@v4`** — GitHub Action to install `kubectl` v1.30.0 on the runner.
+- **`helm/kind-action@v1`** — GitHub Action to spin up an ephemeral Kind cluster (`ci-cluster`) in the deploy jobs.
+- **Kubernetes manifests** — raw YAML resource definitions (`k8s/`: Namespace, Deployment, Service, ConfigMap, Secret, Ingress, HPA).
+- **`kubectl`** — imperative deploys: `apply`, `get`, `describe`, `events`, `rollout status`.
+- **kubeconform** — schema validation of the `k8s/` manifests (`-strict -summary`) in the `prepare` job.
+- **Kind (Kubernetes in Docker)** — local, in-runner test cluster created by `helm/kind-action`.
+- **curl / tar** — downloading and unpacking the kubeconform release binary.
+- **sed** — in-place image-tag substitution in `deployment.yaml` during deploys.
+- **base64** — decoding the `KUBECONFIG` secret into `~/.kube/config`.
+- **nginx:alpine** — placeholder container image deployed as the workload stand-in.
+- **GitHub Environments** — `staging`, `production-gate` (manual approval), and `production` with environment secrets and protection rules.
+
+---
+
 ## What Went Wrong — and the Fix
 
 1. **Deployment workflow silently skipped / not discovered**
